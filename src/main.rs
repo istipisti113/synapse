@@ -48,14 +48,16 @@ async fn main() -> Result<()> {
         control.push_str("playpause");
     });
 
-    // Handle `Previous` method call
-    player.connect_previous(|_player| {
-        //println!("Previous");
+    let ctrl = Arc::clone(&mpris_control);
+    player.connect_previous(move |_player| {
+        let mut control = ctrl.lock().unwrap();
+        control.push_str("previous");
     });
 
-    // Handle `Next` method call
-    player.connect_next(|_player| {
-        //println!("Next");
+    let ctrl = Arc::clone(&mpris_control);
+    player.connect_next(move |_player| {
+        let mut control = ctrl.lock().unwrap();
+        control.push_str("next");
     });
 
     // Handle `PlayPause` method call
@@ -72,6 +74,12 @@ async fn main() -> Result<()> {
             match &*ctrl.as_str() {
                 "playpause" =>{
                     app.toggle_playback();
+                },
+                "next"=>{
+                    app.next_track();
+                },
+                "previous"=>{
+                    app.previous_track();
                 },
                 _ => {}
             }

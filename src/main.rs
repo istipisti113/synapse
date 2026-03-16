@@ -33,12 +33,11 @@ async fn main() -> Result<()> {
     let token = CancellationToken::new();
 
     //tokio::task::spawn_local(player.run());
-    let local = tokio::task::LocalSet::new();
     let player = Player::builder("synapce")
         .can_play(true)
         .can_pause(true)
-        //.can_go_previous(true)
-        //.can_go_next(true)
+        .can_go_previous(true)
+        .can_go_next(true)
         .build()
         .await.unwrap();
 

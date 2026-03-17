@@ -59,6 +59,16 @@ async fn main() -> Result<()> {
         control.push_str("next");
     });
 
+    let ctrl = Arc::clone(&mpris_control);
+    player.connect_set_volume(move |_player, volume| {
+        let mut control = ctrl.lock().unwrap();
+        if volume < 1.0 {
+            control.push_str("volume_down");
+        } else if volume >1.0{
+            control.push_str("volume_up");
+        }
+    });
+
     // Handle `PlayPause` method call
 
     let token_clone = token.clone();
@@ -79,6 +89,12 @@ async fn main() -> Result<()> {
                 },
                 "previous"=>{
                     app.previous_track();
+                },
+                "volume_up"=>{
+                    app.volume_up();
+                },
+                "volume_down"=>{
+                    app.volume_down();
                 },
                 _ => {}
             }

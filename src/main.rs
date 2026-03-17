@@ -97,36 +97,51 @@ async fn main() -> Result<()> {
 
             if event::poll(Duration::from_millis(100)).unwrap() {
                 if let Event::Key(key) = event::read().unwrap() {
-                    match key.code {
-                        KeyCode::Char('q') => {
-                            token_clone.cancel();
-                            break;
-                        },
-                        KeyCode::Char('j') => app.next_song_in_list(),
-                        KeyCode::Char('k') => app.previous_song_in_list(),
-                        KeyCode::Char('h') => app.seek_backward(),
-                        KeyCode::Char('l') => app.seek_forward(),
-                        KeyCode::Char(' ') => app.toggle_playback(),
-                        KeyCode::Up => app.volume_up(),
-                        KeyCode::Down => app.volume_down(),
-                        KeyCode::Char('m') => app.toggle_play_mode(),
-                        KeyCode::Char('n') => app.next_track(),     // Переход на следующий трек
-                        KeyCode::Char('b') => app.previous_track(), // Переход на предыдущий трек
-                        KeyCode::Enter => app.play_selected(),
-                        _ => {}
+                    if app.is_searching {
+                        match key.code{
+                            KeyCode::Char(c) => {
+                                app.search.push_str(&c.to_string());
+                            },
+                            _=>{},
+                        }
+                        if key.code == KeyCode::Esc{
+                            app.is_searching=false;
+                        }
+                        continue;
+
+                    } else {
+                        match key.code {
+                            KeyCode::Char('q') => {
+                                token_clone.cancel();
+                                break;
+                            },
+
+                            KeyCode::Char('j') => app.next_song_in_list(),
+                            KeyCode::Char('k') => app.previous_song_in_list(),
+                            KeyCode::Char('h') => app.seek_backward(),
+                            KeyCode::Char('l') => app.seek_forward(),
+                            KeyCode::Char(' ') => app.toggle_playback(),
+                            KeyCode::Up => app.volume_up(),
+                            KeyCode::Down => app.volume_down(),
+                            KeyCode::Char('m') => app.toggle_play_mode(),
+                            KeyCode::Char('n') => app.next_track(),     // Переход на следующий трек
+                            KeyCode::Char('b') => app.previous_track(), // Переход на предыдущий трек
+                            KeyCode::Char('/') => app.is_searching = true, 
+                            KeyCode::Enter => app.play_selected(),
+                            _ => {}
+
+                        }
                     }
                 }
             }
         }
-
-
         disable_raw_mode().unwrap();
         execute!(terminal.backend_mut(), LeaveAlternateScreen, DisableMouseCapture).unwrap();
     });
 
     tokio::select! {
         _=player.run()=>{}
-        _=token.cancelled()=>{}
+            _=token.cancelled()=>{}
     }
     Ok(())
 }

@@ -43,6 +43,8 @@ pub struct App {
     pub elapsed_time: Duration,
     pub last_update: Instant,
     pub volume: u32,
+    pub search: String,
+    pub is_searching: bool,
     player: Option<Player>,
 }
 
@@ -66,6 +68,8 @@ impl App {
             elapsed_time: Duration::from_secs(0),
             last_update: Instant::now(),
             volume: 100,
+            search: String::new(),
+            is_searching: false,
             player,
         }
     }

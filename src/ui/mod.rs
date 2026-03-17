@@ -17,6 +17,13 @@ pub fn render(f: &mut Frame, app: &mut App) {
             Constraint::Length(6),
         ])
         .split(f.size());
+    
+    let top = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints([
+            Constraint::Percentage(70),
+            Constraint::Percentage(30),
+        ]).split(chunks[0]);
 
     let list_height = chunks[1].height.saturating_sub(2) as usize;
     app.update_scroll(list_height);
@@ -27,7 +34,12 @@ pub fn render(f: &mut Frame, app: &mut App) {
         Span::raw("  |  "),
         Span::styled(current_song, Style::default().fg(Color::White)),
     ])).block(Block::default().borders(Borders::ALL));
-    f.render_widget(header, chunks[0]);
+    f.render_widget(header, top[0]);
+    let search = Paragraph::new(Line::from(vec![
+        Span::styled("Search: ", Style::default().fg(Color::White)),
+        Span::styled(&app.search, Style::default().fg(Color::White))
+    ])).block(Block::default().borders(Borders::ALL));
+    f.render_widget(search, top[1]);
 
     let visible_songs: Vec<ListItem> = app.songs.iter()
         .enumerate()
@@ -65,7 +77,7 @@ pub fn render(f: &mut Frame, app: &mut App) {
         ]),
         Line::from(vec![Span::styled(format!("time: {} / {}", elapsed, total), Style::default().fg(Color::White))]),
         Line::from(vec![Span::styled("j/k: navigation | enter: select/play | space: play/stop | n/b: next/back", Style::default().fg(Color::Gray))]),
-    Line::from(vec![Span::styled("h/l: ±5 sec | m: change mode | ↑/↓: volume", Style::default().fg(Color::Gray))]),
+    Line::from(vec![Span::styled("h/l: ±5 sec | m: change mode | ↑/↓: volume | /: search", Style::default().fg(Color::Gray))]),
 
     ];
     f.render_widget(Paragraph::new(text).block(Block::default().borders(Borders::ALL).title(" 󰌳 player ")), chunks[2]);

@@ -157,6 +157,7 @@ impl App {
     }
 
     pub fn next_track(&mut self) {
+        if self.songs.len()==0{return}
         if self.play_mode == PlayMode::RepeatOne { 
             self.play_current(); 
             return; 
@@ -207,7 +208,7 @@ impl App {
         }
     }
 
-    pub fn next_song_in_list(&mut self) { if self.selected_index < self.songs.len() - 1 { self.selected_index += 1; } }
+    pub fn next_song_in_list(&mut self) { if self.songs.len()==0{return;} if self.selected_index < self.songs.len() - 1 { self.selected_index += 1; } }
     pub fn previous_song_in_list(&mut self) { if self.selected_index > 0 { self.selected_index -= 1; } }
     pub fn play_selected(&mut self) { 
         self.current_track = self.selected_index;

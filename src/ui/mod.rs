@@ -1,4 +1,5 @@
 pub mod app;
+use crossterm::style::style;
 use ratatui::{
     layout::{Constraint, Direction, Layout},
     style::{Color, Modifier, Style},
@@ -35,10 +36,18 @@ pub fn render(f: &mut Frame, app: &mut App) {
         Span::styled(current_song, Style::default().fg(Color::White)),
     ])).block(Block::default().borders(Borders::ALL));
     f.render_widget(header, top[0]);
+
     let search = Paragraph::new(Line::from(vec![
         Span::styled("Search: ", Style::default().fg(Color::White)),
         Span::styled(&app.search, Style::default().fg(Color::White))
-    ])).block(Block::default().borders(Borders::ALL));
+    ])).block(Block::default().borders(Borders::ALL)).style(
+            if app.is_searching{
+                Style::default().fg(Color::Yellow)
+            } else {
+                Style::default().fg(Color::White)
+            }
+        );
+
     f.render_widget(search, top[1]);
 
     let visible_songs: Vec<ListItem> = app.songs.iter()

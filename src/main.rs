@@ -97,11 +97,10 @@ async fn main() -> Result<()> {
 
             if event::poll(Duration::from_millis(100)).unwrap() {
                 if let Event::Key(key) = event::read().unwrap() {
-                    if app.is_searching {
+                    if app.is_searching { //handle searching ui TODO: no cursor as of this comment now
                         match key.code{
-                            KeyCode::Char(c) => {
-                                app.search.push_str(&c.to_string());
-                            },
+                            KeyCode::Backspace => {app.search.pop();},
+                            KeyCode::Char(c) => {app.search.push_str(&c.to_string());},
                             _=>{},
                         }
                         if key.code == KeyCode::Esc{

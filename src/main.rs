@@ -1,7 +1,7 @@
 mod ui;
 mod player;
 
-use std::{future::Future, io, thread, time::Duration};
+use std::{io, time::Duration};
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
     execute,
@@ -27,13 +27,10 @@ async fn main() -> Result<()> {
     execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
     let mut terminal = Terminal::new(CrosstermBackend::new(stdout))?;
 
-
     let mpris_control = Arc::new(Mutex::new(String::from("")));
-
     let token = CancellationToken::new();
 
-    //tokio::task::spawn_local(player.run());
-    let player = Player::builder("synapce")
+    let player = Player::builder("synapce") //the name by which it can be controlled
         .can_play(true)
         .can_pause(true)
         .can_go_previous(true)
@@ -68,8 +65,6 @@ async fn main() -> Result<()> {
             control.push_str("volume_up");
         }
     });
-
-    // Handle `PlayPause` method call
 
     let token_clone = token.clone();
     tokio::task::spawn_blocking( move || {
@@ -133,6 +128,5 @@ async fn main() -> Result<()> {
         _=player.run()=>{}
         _=token.cancelled()=>{}
     }
-
     Ok(())
 }

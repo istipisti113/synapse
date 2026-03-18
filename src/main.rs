@@ -113,6 +113,7 @@ async fn main() -> Result<()> {
                             KeyCode::Char(c) => {app.search.push_str(&c.to_string());},
                             _=>{},
                         }
+                        app.selected_index = 0;
                         if key.code == KeyCode::Esc{
                             app.is_searching=false;
                         }
@@ -144,7 +145,10 @@ async fn main() -> Result<()> {
                             KeyCode::Char('n') => app.next_track(),     // Переход на следующий трек
                             KeyCode::Char('b') => app.previous_track(), // Переход на предыдущий трек
                             KeyCode::Char('/') => app.is_searching = true, 
-                            KeyCode::Esc => app.search = String::new(),
+                            KeyCode::Esc => {
+                                app.search = String::new();
+                                app.songs = app.all_songs.clone();
+                            },
                             KeyCode::Enter => app.play_selected(),
                             _ => {}
 

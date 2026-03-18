@@ -35,6 +35,7 @@ pub struct App {
     pub all_songs: Vec<String>,
     pub playlist: Vec<usize>,
     pub current_track: usize,
+    pub current_name: String,
     pub playlist_position: usize,
     pub selected_index: usize,
     pub scroll_offset: usize,
@@ -62,6 +63,7 @@ impl App {
             all_songs,
             playlist: (0..song_count).collect(),
             current_track: 0,
+            current_name: String::new(),
             playlist_position: 0,
             selected_index: 0,
             scroll_offset: 0,
@@ -158,6 +160,7 @@ impl App {
                     self.elapsed_time = Duration::from_secs(0);
                     self.last_update = Instant::now();
                     self.is_playing = true;
+                    self.current_name = self.songs[self.current_track].clone();
                 }
             }
         }

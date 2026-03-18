@@ -29,11 +29,11 @@ pub fn render(f: &mut Frame, app: &mut App) {
     let list_height = chunks[1].height.saturating_sub(2) as usize;
     app.update_scroll(list_height);
 
-    let current_song = app.songs.get(app.current_track).map(|s| s.as_str()).unwrap_or("No track");
+    //let current_song = app.songs.get(app.current_track).map(|s| s.as_str()).unwrap_or("No track");
     let header = Paragraph::new(Line::from(vec![
         Span::styled(" synapse", Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD)),
         Span::raw("  |  "),
-        Span::styled(current_song, Style::default().fg(Color::White)),
+        Span::styled(&app.current_name, Style::default().fg(Color::White)),
     ])).block(Block::default().borders(Borders::ALL));
     f.render_widget(header, top[0]);
 

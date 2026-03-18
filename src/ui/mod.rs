@@ -85,8 +85,8 @@ pub fn render(f: &mut Frame, app: &mut App) {
             Span::styled(volume_text, Style::default().fg(vol_color)),
         ]),
         Line::from(vec![Span::styled(format!("time: {} / {}", elapsed, total), Style::default().fg(Color::White))]),
-        Line::from(vec![Span::styled("j/k: navigation | enter: select/play | space: play/stop | n/b: next/back", Style::default().fg(Color::Gray))]),
-    Line::from(vec![Span::styled("h/l: ±5 sec | m: change mode | ↑/↓: volume | /: search", Style::default().fg(Color::Gray))]),
+        Line::from(vec![Span::styled("j/k: navigation | enter: select/play | space: play/stop | n/b: next/back | q: quit", Style::default().fg(Color::Gray))]),
+    Line::from(vec![Span::styled("h/l: ±5 sec | m: change mode | ↑/↓: volume | /: search | esc: exit search/clear search", Style::default().fg(Color::Gray))]),
 
     ];
     f.render_widget(Paragraph::new(text).block(Block::default().borders(Borders::ALL).title(" 󰌳 player ")), chunks[2]);

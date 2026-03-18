@@ -104,9 +104,10 @@ async fn main() -> Result<()> {
             }
             *ctrl = MprisCommand::None;
 
+            let prevsearch = app.search.clone(); //storing the previous search, only updating when it changes
             if event::poll(Duration::from_millis(100)).unwrap() {
                 if let Event::Key(key) = event::read().unwrap() {
-                    if app.is_searching { //handle searching ui TODO: no cursor as of this comment now
+                    if app.is_searching { //handle searching ui TODO: no cursor as of this comment
                         match key.code{
                             KeyCode::Backspace => {app.search.pop();},
                             KeyCode::Char(c) => {app.search.push_str(&c.to_string());},
@@ -114,6 +115,14 @@ async fn main() -> Result<()> {
                         }
                         if key.code == KeyCode::Esc{
                             app.is_searching=false;
+                        }
+
+                        if prevsearch != app.search{
+                            if app.search != String::new(){
+                                app.songs= app.all_songs.clone().into_iter().filter(|song| song.contains(&app.search)).collect();
+                            } else {
+                                app.songs = app.all_songs.clone();
+                            }
                         }
                         continue;
 
@@ -135,6 +144,7 @@ async fn main() -> Result<()> {
                             KeyCode::Char('n') => app.next_track(),     // Переход на следующий трек
                             KeyCode::Char('b') => app.previous_track(), // Переход на предыдущий трек
                             KeyCode::Char('/') => app.is_searching = true, 
+                            KeyCode::Esc => app.search = String::new(),
                             KeyCode::Enter => app.play_selected(),
                             _ => {}
 

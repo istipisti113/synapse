@@ -32,6 +32,7 @@ impl PlayMode {
 pub struct App {
     pub music_path: String,
     pub songs: Vec<String>,
+    pub all_songs: Vec<String>,
     pub playlist: Vec<usize>,
     pub current_track: usize,
     pub playlist_position: usize,
@@ -51,12 +52,14 @@ pub struct App {
 impl App {
     pub fn new(music_path: String) -> Self {
         let songs = Self::scan_music_directory(&music_path);
+        let all_songs = songs.clone();
         let player = Player::new().ok();
         let song_count = songs.len();
         
         App {
             music_path,
             songs,
+            all_songs,
             playlist: (0..song_count).collect(),
             current_track: 0,
             playlist_position: 0,

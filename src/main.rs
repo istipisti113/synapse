@@ -17,6 +17,15 @@ use mpris_server::{
 
 use std::sync::{Arc, Mutex};
 
+enum MprisCommand{
+    Next,
+    Previous,
+    VlolumeUp,
+    VolumeDown,
+    PlayPause,
+    None,
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
     let args: Vec<String> = std::env::args().collect();
@@ -27,7 +36,7 @@ async fn main() -> Result<()> {
     execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
     let mut terminal = Terminal::new(CrosstermBackend::new(stdout))?;
 
-    let mpris_control = Arc::new(Mutex::new(String::from("")));
+    let mpris_control = Arc::new(Mutex::new(MprisCommand::None));
     let token = CancellationToken::new();
 
     let player = Player::builder("synapce") //the name by which it can be controlled
@@ -41,28 +50,28 @@ async fn main() -> Result<()> {
     let ctrl = Arc::clone(&mpris_control);
     player.connect_play_pause(move |_player| {
         let mut control = ctrl.lock().unwrap();
-        control.push_str("playpause");
+        *control = MprisCommand::PlayPause;
     });
 
     let ctrl = Arc::clone(&mpris_control);
     player.connect_previous(move |_player| {
         let mut control = ctrl.lock().unwrap();
-        control.push_str("previous");
+        *control = MprisCommand::Previous;
     });
 
     let ctrl = Arc::clone(&mpris_control);
     player.connect_next(move |_player| {
         let mut control = ctrl.lock().unwrap();
-        control.push_str("next");
+        *control = MprisCommand::Next;
     });
 
     let ctrl = Arc::clone(&mpris_control);
     player.connect_set_volume(move |_player, volume| {
         let mut control = ctrl.lock().unwrap();
         if volume < 1.0 {
-            control.push_str("volume_down");
+            *control = MprisCommand::VolumeDown;
         } else if volume >1.0{
-            control.push_str("volume_up");
+            *control = MprisCommand::VlolumeUp;
         }
     });
 
@@ -75,25 +84,25 @@ async fn main() -> Result<()> {
             app.check_track_finished();
 
             let mut ctrl = mpris_control.lock().unwrap();
-            match &*ctrl.as_str() {
-                "playpause" =>{
+            match *ctrl {
+                MprisCommand::PlayPause =>{
                     app.toggle_playback();
                 },
-                "next"=>{
+                MprisCommand::Next=>{
                     app.next_track();
                 },
-                "previous"=>{
+                MprisCommand::Previous=>{
                     app.previous_track();
                 },
-                "volume_up"=>{
+                MprisCommand::VlolumeUp=>{
                     app.volume_up();
                 },
-                "volume_down"=>{
+                MprisCommand::VolumeDown=>{
                     app.volume_down();
                 },
                 _ => {}
             }
-            ctrl.clear();
+            *ctrl = MprisCommand::None;
 
             if event::poll(Duration::from_millis(100)).unwrap() {
                 if let Event::Key(key) = event::read().unwrap() {

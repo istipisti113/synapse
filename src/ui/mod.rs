@@ -1,4 +1,6 @@
 pub mod app;
+use std::usize;
+
 use crossterm::style::style;
 use ratatui::{
     layout::{Constraint, Direction, Layout},
@@ -50,6 +52,7 @@ pub fn render(f: &mut Frame, app: &mut App) {
 
     f.render_widget(search, top[1]);
 
+    let current_playing = app.songs.iter().position(|s|*s==app.current_name).unwrap_or(usize::MAX);
     let visible_songs: Vec<ListItem> = app.songs.iter()
         .enumerate()
         .skip(app.scroll_offset)
@@ -57,7 +60,7 @@ pub fn render(f: &mut Frame, app: &mut App) {
         .map(|(i, song)| {
             let style = if i == app.selected_index {
                 Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD)
-            } else if i == app.current_track {
+            } else if i == current_playing {
                 Style::default().fg(Color::Green)
             } else { Style::default() };
             ListItem::new(format!("{:>3}. {}", i + 1, song)).style(style)
